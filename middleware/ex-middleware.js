@@ -31,13 +31,21 @@ app.get('/users', (request, response) => {
 })
 
 app.post('/users', (request, response) => {
-    const { name, age } = request.body
+    try {
+        const { name, age } = request.body
 
-    const user = { id: uuidv4(), name, age }
+        if (age < 18) throw new Error('User must be at least 18 years old') // validação de idade
+        // se a idade for menor que 18, retorna erro que eu criei
 
-    users.push(user) // add o user ao array
+        const user = { id: uuidv4(), name, age }
 
-    return response.status(201).json(users) /* retorna o status 201 - quer dizer que foi criado com sucesso */
+        users.push(user) // add o user ao array
+
+        return response.status(201).json(users) /* retorna o status 201 - quer dizer que foi criado com sucesso */
+
+    } catch (err) {
+        return response.status(500).json({ error: 'Internal server error' })
+    }
 })
 
 app.put('/users/:id', checkUser, (request, response) => { // atualiza informações
